@@ -1,14 +1,15 @@
 import { createClient } from 'redis';
 
 class RedisClient {
-  constructor () {
+  constructor() {
     this.client = createClient();
-    this.client.on('error', err => console.log(err));
+    this.client.on('error', (err) => console.log(err));
     this.connected = false;
     this.client.on('connect', () => {
       this.connected = true;
     });
-}
+  }
+
   isAlive() {
     // returns true when redis con is ok else false
     return this.connected;
@@ -27,23 +28,22 @@ class RedisClient {
     });
   }
 
-  async set(key,value, duration) {
+  async set(key, value, duration) {
     // store key value in redis in duration given
     return new Promise((resolve, reject) => {
-    this.client.setex(key, duration, value, (error) => {
-      if (error) {
-        reject(error);
-      }
+      this.client.setex(key, duration, value, (error) => {
+        if (error) {
+          reject(error);
+        }
+      });
     });
-    });
-
   }
 
   async del(key) {
-    // remove value from redis 
+    // remove value from redis
     return new Promise((resolve, reject) => {
-    this.client.del(key, (error) => {
-        if(error){
+      this.client.del(key, (error) => {
+        if (error) {
           reject(error);
         }
       });
