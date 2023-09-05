@@ -16,7 +16,7 @@ class RedisClient {
     });
   }
 
-  async isAlive() {
+  isAlive() {
     // Check if the Redis client is connected
     return this.isConnected;
   }
