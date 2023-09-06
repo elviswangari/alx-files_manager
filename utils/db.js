@@ -18,13 +18,17 @@ class DBClient {
     this.isConnected = false;
 
     // connect to db
-    this.client.connect((error) => {
-      if (error) {
-        console.log('db error', error);
-      } else {
-        this.isConnected = true;
-      }
-    });
+    this.connect();
+  }
+
+  async connect() {
+  // create a connection
+    try {
+      await this.client.connect();
+      this.isConnected = true;
+    } catch (error) {
+      console.error('Error', error);
+    }
   }
 
   isAlive() {
@@ -34,16 +38,28 @@ class DBClient {
 
   async nbUsers() {
     // get number of docs in user collection
-    const userCollection = await this.client.users.find({})
-      .toArray().length;
-    return userCollection;
+    try {
+      const db = this.client.db(DB_DATABASE);
+      const userCollection = db.collection('users');
+      const count = await userCollection.countDocuments();
+      return count;
+    } catch (error) {
+      console.error('Error', error);
+      return -1;
+    }
   }
 
   async nbFiles() {
     // get number of docs in files collection
-    const filesCollection = await this.client.files.find({})
-      .toArray().length;
-    return filesCollection;
+    try {
+      const db = this.client.db(DB_DATABASE);
+      const filesCollection = db.collection('files');
+      const fileCount = await filesCollection.countDocuments();
+      return fileCount;
+    } catch (error) {
+      console.error('Error', error);
+      return -1;
+    }
   }
 }
 
