@@ -1,67 +1,76 @@
 import { MongoClient } from 'mongodb';
 
-const DB_HOST = process.env.DB_HOST || 'localhost';
-const DB_PORT = process.env.DB_PORT || 27017;
-const DB_DATABASE = process.env.DB_DATABASE || 'file_manager';
-const url = `mongodb://${DB_HOST}:${DB_PORT}/${DB_DATABASE}`;
-
 class DBClient {
   constructor() {
-    // create a mongodb client
-    this.client = new MongoClient(url,
-      {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      });
+    // Define MongoDB connection parameters based on environment variables or defaults.
+    const host = process.env.DB_HOST || 'localhost';
+    const port = process.env.DB_PORT || 27017;
+    const database = process.env.DB_DATABASE || 'files_manager';
 
-    // set connection to be false
+    // Construct the MongoDB connection URL.
+    this.url = `mongodb://${host}:${port}/${database}`;
+
+    // Create a MongoDB client instance with necessary options.
+    this.client = new MongoClient(this.url, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+
+    // Initialize the connection status to false.
     this.isConnected = false;
 
-    // connect to db
+    // Attempt to establish the connection to MongoDB.
     this.connect();
   }
 
   async connect() {
-  // create a connection
     try {
+      // Try to connect to MongoDB.
       await this.client.connect();
+      // Set the connection status to true upon success.
       this.isConnected = true;
+      console.log('Connected to MongoDB');
     } catch (error) {
-      console.error('Error', error);
+      // Handle connection errors and set the connection status to false.
+      console.error('Error connecting to MongoDB:', error);
+      this.isConnected = false;
     }
   }
 
+  // Function to check if the connection to MongoDB is successful.
   isAlive() {
-    // set up connection
     return this.isConnected;
   }
 
+  // Asynchronous function to get the number of documents in the "users" collection.
   async nbUsers() {
-    // get number of docs in user collection
     try {
-      const db = this.client.db(DB_DATABASE);
+      const db = this.client.db();
       const userCollection = db.collection('users');
       const count = await userCollection.countDocuments();
       return count;
     } catch (error) {
-      console.error('Error', error);
+      // Handle errors and return -1 as a default value.
+      console.error('Error:', error);
       return -1;
     }
   }
 
+  // Asynchronous function to get the number of documents in the "files" collection.
   async nbFiles() {
-    // get number of docs in files collection
     try {
-      const db = this.client.db(DB_DATABASE);
+      const db = this.client.db();
       const filesCollection = db.collection('files');
       const fileCount = await filesCollection.countDocuments();
       return fileCount;
     } catch (error) {
-      console.error('Error', error);
+      // Handle errors and return -1 as a default value.
+      console.error('Error:', error);
       return -1;
     }
   }
 }
 
+// Create an instance of DBClient and export it for use in other modules.
 const dbClient = new DBClient();
 export default dbClient;
