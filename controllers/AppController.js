@@ -6,7 +6,7 @@ class AppController {
     const redis = utilsRedis.redisClient.isAlive();
     const db = utilsDB.dbClient.isAlive();
 
-    res.status(200).json({
+    return res.status(200).send({
       redis,
       db,
     });
@@ -16,7 +16,7 @@ class AppController {
     const users = utilsDB.dbClient.nbUsers();
     const files = utilsDB.dbClient.nbFiles();
 
-    res.status(200).json({
+    return res.status(200).send({
       users,
       files,
     });
