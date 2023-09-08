@@ -1,12 +1,12 @@
 const express = require('express');
-const routes = require('./routes/index');
 
 const app = express();
 const port = process.env.PORT || 5000;
 
-app.use(express.json());
-app.use(routes);
+const routes = require('./routes/index');
+
+app.use('/', routes);
 
 app.listen(port, () => {
-  console.log('listening on port', port);
+  console.log(`Server is running on port ${port}`);
 });

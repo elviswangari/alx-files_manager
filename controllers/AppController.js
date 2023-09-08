@@ -1,18 +1,43 @@
-const redisClient = require('../utils/redis');
-const dbClient = require('../utils/db');
+// controllers/AppController.js
+import { redisClient } from '../utils/redis';
+import dbClient from '../utils/db';
 
-class AppController {
-  static getStatus(req, res) {
-    const status = { redis: redisClient.isAlive(), db: dbClient.isAlive() };
+const AppController = {
+  getStatus: async (req, res, next) => {
+    try {
+      // Check Redis and MongoDB connection status
+      const [redisStatus, dbStatus] = await Promise.all([
+        redisClient.isAlive(),
+        dbClient.isAlive(),
+      ]);
 
-    res.status(200).send(status);
-  }
+      if (redisStatus && dbStatus) {
+        res.status(200).json({ redis: true, db: true });
+      } else {
+        res.status(500).json({ error: 'Internal Server Error' });
+      }
+    } catch (error) {
+      next(error);
+    }
+  },
 
-  static getStats(req, res) {
-    const users = dbClient.nbUsers();
-    const files = dbClient.nbFiles();
+  getStats: async (req, res, next) => {
+    try {
+      // Get the number of users and files from MongoDB
+      const [userCount, fileCount] = await Promise.all([
+        dbClient.nbUsers(),
+        dbClient.nbFiles(),
+      ]);
 
-    res.status(200).send({ users, files });
-  }
-}
-module.exports = AppController;
+      if (userCount !== -1 && fileCount !== -1) {
+        res.status(200).json({ users: userCount, files: fileCount });
+      } else {
+        res.status(500).json({ error: 'Internal Server Error' });
+      }
+    } catch (error) {
+      next(error);
+    }
+  },
+};
+
+export default AppController;
