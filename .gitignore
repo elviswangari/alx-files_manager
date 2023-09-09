@@ -2,7 +2,6 @@
 /dist
 /tmp
 /out-tsc
-
 # Runtime data
 pids
 *.pid
