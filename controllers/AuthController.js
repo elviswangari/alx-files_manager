@@ -18,23 +18,19 @@ exports.getConnect = async (req, res) => {
   try {
     const user = await dbClient.getUser(email);
 
-    if (!user) {
+    if (!user || !user.email || user.password !== hashedPass) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
-    const userId = user._id.toString();
-    if (user.email === email && user.password === hashedPass) {
-      const token = uuidv4();
-      const redisKey = `auth_${token}`;
-      const data = {
-        id: userId,
-        email: user.email,
-      };
-      await redisClient.set(redisKey, JSON.stringify(data), 86400);
-      return res.status(200).json({
-        token,
-      });
-    }
-    return res.status(401).json({ error: 'Unauthorized' });
+    const token = uuidv4();
+    const redisKey = `auth_${token}`;
+    const data = {
+      id: user._id.toString(),
+      email: user.email,
+    };
+    await redisClient.set(redisKey, JSON.stringify(data), 86400);
+    return res.status(200).json({
+      token,
+    });
   } catch (error) {
     console.error('Error:', error);
     return res.status(500).json({ error: 'Internal server error' });

@@ -39,14 +39,15 @@ exports.getMe = async (req, res) => {
   try {
     const token = req.header('X-Token');
     const redisKey = `auth_${token}`;
-    const userId = await redisClient.get(redisKey);
+    const userData = await redisClient.get(redisKey);
 
-    if (!token || !userId) {
+    if (!token || !userData) {
       return res.status(401).json({
         error: 'Unauthorized',
       });
     }
-    return res.status(200).send(userId);
+    const { email, id } = JSON.parse(userData);
+    return res.status(200).json({ id, email });
     // return res.status(200).json({
     //   id: userId,
     //   email: userId.email,
