@@ -68,8 +68,33 @@ class DBClient {
       return -1;
     }
   }
-}
 
+  // find user in db
+  async getUser(key) {
+    try {
+      const db = this.client.db();
+      const userCollection = db.collection('users');
+      const user = await userCollection.findOne({ email: key });
+      return user.email;
+    } catch (error) {
+      console.error('Error user not found', error);
+      return -1;
+    }
+  }
+
+  // insert user in db
+  async insertUser(user) {
+    try {
+      const db = this.client.db();
+      const userCollection = db.collection('users');
+      const results = await userCollection.insertOne(user);
+      return results;
+    } catch (error) {
+      console.error('Error failed to insert into the db', error);
+      return -1;
+    }
+  }
+}
 // Create an instance of DBClient and export it for use in other modules.
 export const dbClient = new DBClient();
 export default dbClient;
