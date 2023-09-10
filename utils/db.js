@@ -75,7 +75,7 @@ class DBClient {
       const db = this.client.db();
       const userCollection = db.collection('users');
       const user = await userCollection.findOne({ email: key });
-      return user.email;
+      return user;
     } catch (error) {
       console.error('Error user not found', error);
       return -1;
