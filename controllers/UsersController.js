@@ -15,7 +15,7 @@ exports.postNew = async (req, res) => {
     const userExists = await dbClient.getUser(email);
 
     if (userExists === email) {
-      return res.status(400).json({ error: 'User already exists' });
+      return res.status(400).json({ error: 'Already exist' });
     }
     const pHash = sha1(password);
     const newUser = {
@@ -24,8 +24,8 @@ exports.postNew = async (req, res) => {
     };
     const inserted = await dbClient.insertUser(newUser);
     return res.status(201).json({
-      id: inserted.insertedId,
-      email: inserted.email,
+      id: inserted.insertedId.toString(),
+      email: newUser.email,
     });
   } catch (error) {
     console.error('Error creating user:', error);
