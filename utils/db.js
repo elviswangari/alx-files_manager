@@ -25,11 +25,10 @@ class DBClient {
 
   async connect() {
     try {
-      // Try to connect to MongoDB.
+      // Try to connect to Redis.
       await this.client.connect();
       // Set the connection status to true upon success.
       this.isConnected = true;
-      console.log('Connected to MongoDB');
     } catch (error) {
       // Handle connection errors and set the connection status to false.
       console.error('Error connecting to MongoDB:', error);
